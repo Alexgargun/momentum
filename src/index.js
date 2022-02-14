@@ -68,13 +68,34 @@ const weatherDescription = document.querySelector(".weather-description");
 const windSpeed = document.querySelector(".wind");
 const humidity = document.querySelector(".humidity");
 
-city.addEventListener("change", getWeather);
+function setCity(event) {
+  if (event.code === "Enter") {
+    getWeather();
+    city.blur();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", getWeather);
+city.addEventListener("keypress", setCity);
+
+// function citySetLocalStorage() {
+//   localStorage.setItem("city", city.value);
+// }
+// window.addEventListener("beforeinput", citySetLocalStorage);
+
+// function cityGetLocalStorage() {
+//   if (localStorage.getItem("city")) {
+//     city.value = localStorage.getItem("city");
+//   }
+// }
+
+// window.addEventListener("load", cityGetLocalStorage);
 
 async function getWeather() {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&lang=en&appid=de6eaa2d57fccbdef9290b2a14348434&units=metric`;
   const res = await fetch(url);
   const data = await res.json();
-  console.log(data);
+  console.log(city.value);
   weatherIcon.classList.add(`owf-${data.weather[0].id}`);
   temperature.textContent = `${data.main.temp}°C`;
   weatherDescription.textContent = data.weather[0].description;
@@ -84,15 +105,12 @@ async function getWeather() {
 getWeather();
 
 // Get image from API
-//const body = document.getElementsByTagName("body");
-//console.log(body);
 
 async function image() {
   const imagePromise = await fetch(
     "https://api.unsplash.com/photos/random?orientation=landscape&query=nature&client_id=e2077ad31a806c894c460aec8f81bc2af4d09c4f8104ae3177bb809faf0eac17"
   );
   const data = await imagePromise.json();
-  console.log(data.urls.regular);
   document.body.style.backgroundImage = `url('${data.urls.regular}')`;
 }
 
@@ -102,4 +120,25 @@ const slideNext = document.querySelector(".slide-next");
 slidePrev.addEventListener("click", image);
 slideNext.addEventListener("click", image);
 
-console.log(slidePrev, slideNext);
+// Quotes
+
+const quote = document.querySelector(".quote");
+const author = document.querySelector(".author");
+const changeQuote = document.querySelector(".change-quote");
+
+function getRandomNum(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+console.log(quote, author, changeQuote);
+
+async function quotes() {
+  const quotesPromise = await fetch("https://type.fit/api/quotes");
+  const res = await quotesPromise.json();
+  const item = res[getRandomNum(1, res.length)];
+  quote.textContent = `"${item.text}"`;
+  author.textContent = `${item.author}`;
+}
+quotes();
+
+changeQuote.addEventListener("click", quotes);
