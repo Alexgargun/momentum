@@ -1,3 +1,5 @@
+import playList from "./playList";
+
 // Date & Time
 
 const time = document.querySelector(".time");
@@ -95,7 +97,6 @@ async function getWeather() {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&lang=en&appid=de6eaa2d57fccbdef9290b2a14348434&units=metric`;
   const res = await fetch(url);
   const data = await res.json();
-  console.log(city.value);
   weatherIcon.classList.add(`owf-${data.weather[0].id}`);
   temperature.textContent = `${data.main.temp}°C`;
   weatherDescription.textContent = data.weather[0].description;
@@ -130,8 +131,6 @@ function getRandomNum(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-console.log(quote, author, changeQuote);
-
 async function quotes() {
   const quotesPromise = await fetch("https://type.fit/api/quotes");
   const res = await quotesPromise.json();
@@ -142,3 +141,84 @@ async function quotes() {
 quotes();
 
 changeQuote.addEventListener("click", quotes);
+
+// Audio
+
+const play = document.querySelector(".play");
+const playPrev = document.querySelector(".play-prev");
+const playNext = document.querySelector(".play-next");
+const ul = document.querySelector(".play-list");
+let playNum = 0;
+let isPlay = false;
+
+playList.forEach((element) => {
+  const li = document.createElement("li");
+  li.classList.add("play-item");
+  li.textContent = element.title;
+  ul.append(li);
+});
+
+// const playListItem = document.querySelectorAll(".play-item");
+// for (let i = 0; i < playListItem.length; i++) {
+//   console.log(playListItem[i]);
+// }
+
+const audio = new Audio();
+
+function togglePlayAudio() {
+  audio.src = playList[playNum].src;
+  if (isPlay == false) {
+    isPlay = true;
+    audio.play();
+    play.classList.add("pause");
+    play.classList.remove("play");
+    playListItem[playNum].classList.add("item-active");
+  } else {
+    isPlay = false;
+    audio.pause();
+    play.classList.add("play");
+    play.classList.remove("pause");
+    playListItem[playNum].classList.remove("item-active");
+  }
+}
+
+play.addEventListener("click", togglePlayAudio);
+// play.addEventListener("click", toggleButton);
+// play.addEventListener("click", playListActive);
+
+function playAudio() {
+  audio.src = playList[playNum].src;
+  audio.play();
+  play.classList.add("pause");
+  play.classList.remove("play");
+  console.log(isPlay);
+}
+
+function next() {
+  if (playNum < playList.length - 1) {
+    playNum++;
+  } else {
+    playNum = 0;
+    playListItem[playList.length - 1].classList.remove("item-active");
+  }
+  playAudio();
+  playListItem[playNum].classList.add("item-active");
+  playListItem[playNum - 1].classList.remove("item-active");
+}
+
+function prev() {
+  if (playNum > 0) {
+    playNum--;
+  } else {
+    playNum = playList.length - 1;
+    playListItem[0].classList.remove("item-active");
+  }
+  playAudio();
+  playListItem[playNum].classList.add("item-active");
+  playListItem[playNum + 1].classList.remove("item-active");
+}
+
+playPrev.addEventListener("click", prev);
+playNext.addEventListener("click", next);
+
+// Create Playlist
