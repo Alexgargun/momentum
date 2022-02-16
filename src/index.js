@@ -151,17 +151,29 @@ const ul = document.querySelector(".play-list");
 let playNum = 0;
 let isPlay = false;
 
-playList.forEach((element) => {
+for (let i = 0; i < playList.length; i++) {
   const li = document.createElement("li");
   li.classList.add("play-item");
-  li.textContent = element.title;
+  li.setAttribute("data-num", `${i}`);
+  li.textContent = playList[i].title;
   ul.append(li);
+  console.log(i);
+}
+
+// playList.forEach((element) => {
+//   const li = document.createElement("li");
+//   li.classList.add("play-item");
+//   li.setAttribute("data-num", ``);
+//   li.textContent = element.title;
+//   ul.append(li);
+// });
+
+const playListItem = document.querySelectorAll(".play-item");
+playListItem.forEach((element) => {
+  console.log(element.getAttribute("data-num"));
 });
 
-// const playListItem = document.querySelectorAll(".play-item");
-// for (let i = 0; i < playListItem.length; i++) {
-//   console.log(playListItem[i]);
-// }
+function playOnTouch(e) {}
 
 const audio = new Audio();
 
@@ -170,6 +182,7 @@ function togglePlayAudio() {
   if (isPlay == false) {
     isPlay = true;
     audio.play();
+
     play.classList.add("pause");
     play.classList.remove("play");
     playListItem[playNum].classList.add("item-active");
@@ -180,6 +193,15 @@ function togglePlayAudio() {
     play.classList.remove("pause");
     playListItem[playNum].classList.remove("item-active");
   }
+}
+audio.addEventListener("ended", audioEnded);
+console.log(isPlay);
+
+function audioEnded() {
+  isPlay = false;
+  play.classList.add("play");
+  play.classList.remove("pause");
+  playListItem[playNum].classList.remove("item-active");
 }
 
 play.addEventListener("click", togglePlayAudio);
